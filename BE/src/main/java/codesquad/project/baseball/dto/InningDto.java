@@ -4,9 +4,12 @@ import codesquad.project.baseball.domain.Game;
 import codesquad.project.baseball.domain.Inning;
 import codesquad.project.baseball.domain.Player;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import java.util.List;
 
+@JsonPropertyOrder({"inningId", "inning_number", "ball_count", "out_count","pitcher_name", "pitcher_number",
+        "batter_name", "batter_number", "basse_status", "score", "home_team_score", "away_team_score"})
 public class InningDto {
     private Long inningId;
 
@@ -16,21 +19,30 @@ public class InningDto {
     @JsonProperty("ball_count")
     private String ballCount;
 
+    @JsonProperty("out_count")
     private int outCount;
 
+    @JsonProperty("pitcher_name")
     private String pitcherName;
 
+    @JsonProperty("pitcher_number")
     private Long pitchNumber;
 
+    @JsonProperty("batter_name")
     private String batterName;
 
+    @JsonProperty("batter_number")
     private Long batterNumber;
 
+    @JsonProperty("batter_status")
     private List<String> baseStatus;
 
     private int score;
 
+    @JsonProperty("home_team_score")
     private int homeTeamScore;
+
+    @JsonProperty("away_team_score")
     private int awayTeamScore;
 
     public InningDto(Inning inning, Game game, Player nowBatter, Player nowPitcher) {
