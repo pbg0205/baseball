@@ -40,6 +40,7 @@ CREATE TABLE IF NOT EXISTS `baseball`.`GAME`
     `HOME_TEAM_SCORE` INT NOT NULL DEFAULT 0,
     `AWAY_TEAM_ID`    INT NOT NULL,
     `AWAY_TEAM_SCORE` INT NOT NULL DEFAULT 0,
+    `NOW_INNING_ID`   INT NOT NULL,
     PRIMARY KEY (`GAME_ID`),
     INDEX             `fk_GAME_TEAM1_idx` (`HOME_TEAM_ID` ASC),
     INDEX             `fk_GAME_TEAM2_idx` (`AWAY_TEAM_ID` ASC),
@@ -67,7 +68,7 @@ CREATE TABLE IF NOT EXISTS `baseball`.`PLAYER`
     `PLAYER_ID`   INT          NOT NULL AUTO_INCREMENT,
     `TEAM_ID`     INT          NOT NULL,
     `PLAYER_NAME` VARCHAR(200) NOT NULL DEFAULT '',
-    `IS_PICHER`   TINYINT      NULL     DEFAULT 0,
+    `IS_PITCHER`   TINYINT      NULL     DEFAULT 0,
     PRIMARY KEY (`PLAYER_ID`),
     INDEX         `fk_PLAYER_TEAM_idx` (`TEAM_ID` ASC),
     CONSTRAINT `fk_PLAYER_TEAM`
@@ -88,6 +89,7 @@ CREATE TABLE IF NOT EXISTS `baseball`.`INNING`
 (
     `INNING_ID`       INT          NOT NULL,
     `GAME_ID`         INT          NOT NULL,
+    `TEAM_ID`         INT          NOT NULL,
     `NOW_BATTER_ID`   INT          NOT NULL,
     `NOW_PITCHER_ID`  INT          NOT NULL,
     `INNING_NUMBER`   INT          NOT NULL DEFAULT 1,
@@ -113,7 +115,8 @@ CREATE TABLE IF NOT EXISTS `baseball`.`INNING`
         FOREIGN KEY (`NOW_PITCHER_ID`)
             REFERENCES `baseball`.`PLAYER` (`PLAYER_ID`)
             ON DELETE NO ACTION
-            ON UPDATE NO ACTION
+            ON UPDATE NO ACTION,
+    GAME_KEY INT
 )
     ENGINE = InnoDB;
 

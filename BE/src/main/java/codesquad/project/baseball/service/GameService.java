@@ -2,7 +2,7 @@ package codesquad.project.baseball.service;
 
 import codesquad.project.baseball.controller.GameController;
 import codesquad.project.baseball.domain.Game;
-import codesquad.project.baseball.domain.Team;
+import codesquad.project.baseball.domain.Inning;
 import codesquad.project.baseball.dto.GameDto;
 import codesquad.project.baseball.repository.GameRepository;
 import codesquad.project.baseball.repository.TeamRepository;
@@ -34,4 +34,11 @@ public class GameService {
                 .collect(Collectors.toList());
     }
 
+    public Inning getNowInningInGame(Long gameId, Long inningId) {
+        Game game = gameRepository.findById(gameId).orElseThrow(RuntimeException::new);
+        Inning nowInning = game.getInnings().stream().filter(inning -> inning.isSameInning(inningId))
+                .findFirst().orElseThrow(RuntimeException::new);
+
+        return nowInning;
+    }
 }
