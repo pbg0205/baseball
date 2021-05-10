@@ -30,7 +30,7 @@ public class GameController {
 
     @GetMapping("/{gameId}/inning/{inningId}")
     public ResponseEntity getPlayPage(@PathVariable Long gameId, @PathVariable Long inningId) {
-        LOGGER.debug("GET METHOD : /baseball/{}/{}", gameId, inningId);
+        LOGGER.debug("GET METHOD : /baseball/{}/inning/{}", gameId, inningId);
         return new ResponseEntity(gameService.getNowInningInGame(gameId, inningId), HttpStatus.OK);
     }
 }
