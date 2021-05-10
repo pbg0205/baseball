@@ -3,7 +3,10 @@ package codesquad.project.baseball.service;
 import codesquad.project.baseball.controller.GameController;
 import codesquad.project.baseball.domain.Game;
 import codesquad.project.baseball.domain.Inning;
+import codesquad.project.baseball.domain.Player;
+import codesquad.project.baseball.domain.Team;
 import codesquad.project.baseball.dto.GameDto;
+import codesquad.project.baseball.dto.InningDto;
 import codesquad.project.baseball.repository.GameRepository;
 import codesquad.project.baseball.repository.TeamRepository;
 import org.slf4j.Logger;
@@ -29,16 +32,38 @@ public class GameService {
     public List<GameDto> getGameList() {
         return gameRepository.findAll().stream()
                 .map(game -> new GameDto(game,
-                teamRepository.findById((game.getHomeTeamId())).orElseThrow(RuntimeException::new),
-                teamRepository.findById((game.getAwayTeamId())).orElseThrow(RuntimeException::new)))
+                        findTeam(game.getHomeTeamId()),
+                        findTeam(game.getAwayTeamId())))
                 .collect(Collectors.toList());
     }
 
-    public Inning getNowInningInGame(Long gameId, Long inningId) {
+    public InningDto getNowInningInGame(Long gameId, Long inningId) {
         Game game = gameRepository.findById(gameId).orElseThrow(RuntimeException::new);
-        Inning nowInning = game.getInnings().stream().filter(inning -> inning.isSameInning(inningId))
-                .findFirst().orElseThrow(RuntimeException::new);
+        Inning nowInning = findInningFromInnings(game.getInnings(), inningId);
 
-        return nowInning;
+        LOGGER.debug("nowInning : {}", nowInning);
+
+        Player nowBatter = findPlayer(game.getHomeTeamId(), nowInning.getNowBatterId());
+        Player nowPitcher = findPlayer(game.getAwayTeamId(), nowInning.getNowPitcherId());
+
+        LOGGER.debug("now batter : {}", nowBatter);
+        LOGGER.debug("now pitcher : {}", nowPitcher);
+
+        return new InningDto(nowInning, game, nowBatter, nowPitcher);
+    }
+
+    public Inning findInningFromInnings(List<Inning> innings, Long inningId) {
+        return innings.stream()
+                .filter(inning -> inning.isSameInning(inningId))
+                .findFirst().orElseThrow(RuntimeException::new);
+    }
+
+    public Team findTeam(Long teamId) {
+        return teamRepository.findById(teamId)
+                .orElseThrow(RuntimeException::new);
+    }
+
+    public Player findPlayer(Long teamId, Long playerId) {
+        return findTeam(teamId).getPlayer(playerId);
     }
 }

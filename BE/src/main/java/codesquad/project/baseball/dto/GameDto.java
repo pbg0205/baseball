@@ -58,4 +58,18 @@ public class GameDto {
     public Long getNowInningId() {
         return nowInningId;
     }
+
+    @Override
+    public String toString() {
+        return "GameDto{" +
+                "gameId=" + gameId +
+                ", homeTeamId=" + homeTeamId +
+                ", homeTeamName='" + homeTeamName + '\'' +
+                ", homeTeamPoint=" + homeTeamPoint +
+                ", awayTeamId=" + awayTeamId +
+                ", awayTeamName='" + awayTeamName + '\'' +
+                ", awayTeamPoint=" + awayTeamPoint +
+                ", nowInningId=" + nowInningId +
+                '}';
+    }
 }

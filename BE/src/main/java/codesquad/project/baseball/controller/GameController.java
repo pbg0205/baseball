@@ -24,11 +24,13 @@ public class GameController {
 
     @GetMapping
     public ResponseEntity getGamePage() {
+        LOGGER.debug("GET METHOD : /baseball");
         return new ResponseEntity(gameService.getGameList(), HttpStatus.OK);
     }
 
     @GetMapping("/{gameId}/inning/{inningId}")
     public ResponseEntity getPlayPage(@PathVariable Long gameId, @PathVariable Long inningId) {
+        LOGGER.debug("GET METHOD : /baseball/{}/{}", gameId, inningId);
         return new ResponseEntity(gameService.getNowInningInGame(gameId, inningId), HttpStatus.OK);
     }
 }

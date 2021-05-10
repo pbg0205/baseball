@@ -81,4 +81,19 @@ public class Inning {
     public boolean isSameInning(Long inningId) {
         return this.inningId == inningId;
     }
+
+    @Override
+    public String toString() {
+        return "Inning{" +
+                "inningId=" + inningId +
+                ", gameId=" + gameId +
+                ", nowBatterId=" + nowBatterId +
+                ", nowPitcherId=" + nowPitcherId +
+                ", inningNumber=" + inningNumber +
+                ", score=" + score +
+                ", nowBallCount='" + nowBallCount + '\'' +
+                ", nowOutCount=" + nowOutCount +
+                ", nowBaseStatus=" + nowBaseStatus +
+                '}';
+    }
 }

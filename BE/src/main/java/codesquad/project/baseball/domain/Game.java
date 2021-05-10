@@ -60,4 +60,17 @@ public class Game {
     public void addInning(Inning inning) {
         innings.add(inning);
     }
+
+    @Override
+    public String toString() {
+        return "Game{" +
+                "gameId=" + gameId +
+                ", homeTeamId=" + homeTeamId +
+                ", homeTeamScore=" + homeTeamScore +
+                ", awayTeamId=" + awayTeamId +
+                ", awayTeamScore=" + awayTeamScore +
+                ", innings=" + innings +
+                ", nowInningId=" + nowInningId +
+                '}';
+    }
 }
