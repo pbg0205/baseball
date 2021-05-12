@@ -1,14 +1,12 @@
 package codesquad.project.baseball.controller;
 
+import codesquad.project.baseball.dto.InningDto;
 import codesquad.project.baseball.service.GameService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/baseball")
@@ -31,6 +29,12 @@ public class GameController {
     @GetMapping("/{gameId}/inning/{inningId}")
     public ResponseEntity getPlayPage(@PathVariable Long gameId, @PathVariable Long inningId) {
         LOGGER.debug("GET METHOD : /baseball/{}/inning/{}", gameId, inningId);
-        return new ResponseEntity(gameService.getNowInningInGame(gameId, inningId), HttpStatus.OK);
+        return new ResponseEntity(gameService.getInningDtoInGame(gameId, inningId), HttpStatus.OK);
+    }
+
+    @PutMapping("/{gameId}/inning/{inningId}/pitch")
+    public ResponseEntity pitch(@PathVariable Long gameId, @PathVariable Long inningId,
+                                @RequestBody InningDto inningDto) {
+        return new ResponseEntity(gameService.pitch(gameId, inningId, inningDto), HttpStatus.OK);
     }
 }

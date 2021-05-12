@@ -12,6 +12,8 @@ public class Inning {
 
     private Long gameId;
 
+    private Long teamId;
+
     private Long nowBatterId;
 
     private Long nowPitcherId;
@@ -26,9 +28,11 @@ public class Inning {
 
     private List<String> nowBaseStatus = new ArrayList<>();
 
-    public Inning(Long gameId, Long nowBatterId, Long nowPitcherId, int inningNumber, int score,
-                  String nowBallCount, int nowOutCount, String nowBaseStatus) {
+    public Inning(Long inningId, Long gameId, Long teamId, Long nowBatterId, Long nowPitcherId, int inningNumber,
+                  int score, String nowBallCount, int nowOutCount, String nowBaseStatus) {
+        this.inningId = inningId;
         this.gameId = gameId;
+        this.teamId = teamId;
         this.nowBatterId = nowBatterId;
         this.nowPitcherId = nowPitcherId;
         this.inningNumber = inningNumber;
@@ -44,6 +48,10 @@ public class Inning {
 
     public Long getGameId() {
         return gameId;
+    }
+
+    public Long getTeamId() {
+        return teamId;
     }
 
     public Long getNowBatterId() {
@@ -80,6 +88,11 @@ public class Inning {
 
     public boolean isSameInning(Long inningId) {
         return this.inningId == inningId;
+    }
+
+    public void updateToNextBatterId(Long batterId) {
+        this.nowBatterId = batterId;
+        this.nowBaseStatus = "";
     }
 
     @Override
