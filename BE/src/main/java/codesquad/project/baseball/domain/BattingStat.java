@@ -65,4 +65,14 @@ public class BattingStat {
     public double getAverageHitRatio() {
         return averageHitRatio;
     }
+
+    public void addHit() {
+        this.atBat++;
+        this.hits++;
+    }
+
+    public void addOut() {
+        this.atBat++;
+        this.out++;
+    }
 }

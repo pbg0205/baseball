@@ -7,6 +7,7 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface BattingStatusRepository extends CrudRepository<BattingStat, Long> {
     //custom query를 만들자.
@@ -15,4 +16,6 @@ public interface BattingStatusRepository extends CrudRepository<BattingStat, Lon
             "INNER JOIN PLAYER ON BATTING_STAT.PLAYER_ID = PLAYER.PLAYER_ID " +
             "WHERE BATTING_STAT.TEAM_ID =:teamId and GAME_ID =:gameId")
     List<PlayerStatDao> findAllByTeamIdAndGameId(@Param("gameId")Long gameId, @Param("teamId")Long teamId);
+
+    Optional<BattingStat> findByGameIdAndPlayerId(Long gameId, Long playerId);
 }
