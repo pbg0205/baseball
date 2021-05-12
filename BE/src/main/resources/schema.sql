@@ -24,9 +24,7 @@ CREATE TABLE IF NOT EXISTS `baseball`.`TEAM`
     `TEAM_ID`   INT          NOT NULL AUTO_INCREMENT,
     `TEAM_NAME` VARCHAR(200) NOT NULL DEFAULT '',
     PRIMARY KEY (`TEAM_ID`)
-)
-    ENGINE = InnoDB;
-
+)DEFAULT CHARSET=utf8;
 
 -- -----------------------------------------------------
 -- Table `baseball`.`GAME`
@@ -54,9 +52,7 @@ CREATE TABLE IF NOT EXISTS `baseball`.`GAME`
             REFERENCES `baseball`.`TEAM` (`TEAM_ID`)
             ON DELETE NO ACTION
             ON UPDATE NO ACTION
-)
-    ENGINE = InnoDB;
-
+)DEFAULT CHARSET=utf8;
 
 -- -----------------------------------------------------
 -- Table `baseball`.`PLAYER`
@@ -77,8 +73,7 @@ CREATE TABLE IF NOT EXISTS `baseball`.`PLAYER`
             ON DELETE NO ACTION
             ON UPDATE NO ACTION,
     TEAM_KEY INT
-)
-    ENGINE = InnoDB;
+)DEFAULT CHARSET=utf8;
 
 
 -- -----------------------------------------------------
@@ -118,8 +113,7 @@ CREATE TABLE IF NOT EXISTS `baseball`.`INNING`
             ON DELETE NO ACTION
             ON UPDATE NO ACTION,
     GAME_KEY INT
-)
-    ENGINE = InnoDB;
+)DEFAULT CHARSET=utf8;
 
 
 -- -----------------------------------------------------
@@ -149,8 +143,7 @@ CREATE TABLE IF NOT EXISTS `baseball`.`BATTING_STAT`
             REFERENCES `baseball`.`PLAYER` (`PLAYER_ID`)
             ON DELETE NO ACTION
             ON UPDATE NO ACTION
-)
-    ENGINE = InnoDB;
+)DEFAULT CHARSET=utf8;
 
 
 -- -----------------------------------------------------
@@ -176,8 +169,7 @@ CREATE TABLE IF NOT EXISTS `baseball`.`MATCH`
             REFERENCES `baseball`.`TEAM` (`TEAM_ID`)
             ON DELETE NO ACTION
             ON UPDATE NO ACTION
-)
-    ENGINE = InnoDB;
+)DEFAULT CHARSET=utf8;
 
 
 SET SQL_MODE = @OLD_SQL_MODE;
