@@ -37,4 +37,9 @@ public class GameController {
                                 @RequestBody InningDto inningDto) {
         return new ResponseEntity(gameService.pitch(gameId, inningId, inningDto), HttpStatus.OK);
     }
+
+    @GetMapping("{gameId}/score/{teamId}")
+    public ResponseEntity getScorePage(@PathVariable Long gameId, @PathVariable Long teamId) {
+        return new ResponseEntity("", HttpStatus.OK);
+    }
 }
