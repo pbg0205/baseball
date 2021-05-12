@@ -2,10 +2,12 @@ package codesquad.project.baseball.domain;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.MappedCollection;
+import org.springframework.data.relational.core.mapping.Table;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Table("GAME")
 public class Game {
     @Id
     private Long gameId;

@@ -125,11 +125,12 @@ CREATE TABLE IF NOT EXISTS `baseball`.`BATTING_STAT`
 (
     `BATTING_STAT_ID`   INT            NOT NULL AUTO_INCREMENT,
     `GAME_ID`           INT            NOT NULL,
+    `TEAM_ID`           INT            NOT NULL,
     `PLAYER_ID`         INT            NOT NULL,
     `AT_BAT`            INT            NULL DEFAULT 0,
     `HITS`              INT            NULL DEFAULT 0,
     `OUT`               INT            NULL DEFAULT 0,
-    `AVERAGE_HIT_RATIO` DECIMAL(10, 3) NULL,
+    `AVERAGE_HIT_RATIO` DECIMAL(10, 3) NULL DEFAULT 0,
     PRIMARY KEY (`BATTING_STAT_ID`),
     INDEX               `fk_BATTING_STAT_GAME1_idx` (`GAME_ID` ASC),
     INDEX               `fk_BATTING_STAT_PLAYER1_idx` (`PLAYER_ID` ASC),
