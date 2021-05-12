@@ -5,6 +5,7 @@ import codesquad.project.baseball.domain.*;
 import codesquad.project.baseball.dto.BallCountDto;
 import codesquad.project.baseball.dto.GameDto;
 import codesquad.project.baseball.dto.InningDto;
+import codesquad.project.baseball.repository.BattingStatusRepository;
 import codesquad.project.baseball.repository.GameRepository;
 import codesquad.project.baseball.repository.InningRepository;
 import codesquad.project.baseball.repository.TeamRepository;
@@ -24,12 +25,14 @@ public class GameService {
     private final GameRepository gameRepository;
     private final InningRepository inningRepository;
     private final TeamRepository teamRepository;
+    private final BattingStatusRepository battingStatusRepository;
 
     public GameService(GameRepository gameRepository, InningRepository inningRepository,
-                       TeamRepository teamRepository) {
+                       TeamRepository teamRepository, BattingStatusRepository battingStatusRepository) {
         this.gameRepository = gameRepository;
         this.inningRepository = inningRepository;
         this.teamRepository = teamRepository;
+        this.battingStatusRepository = battingStatusRepository;
     }
 
     public List<GameDto> getGameList() {
@@ -93,6 +96,7 @@ public class GameService {
 
     public InningDto pitch(Long gameId, Long inningId, InningDto inningDto) {
         Game game = gameRepository.findById(gameId).orElseThrow(RuntimeException::new);
+        BattingStat battingStat = getNowBatterStat(gameId, inningDto.getBatterNumber());
         char ballTypeValue = BallCount.findBallTypeValue(RandomUtils.generateBallCountNumber());
 
         inningDto.appendBallCount(ballTypeValue);
@@ -102,6 +106,10 @@ public class GameService {
 
         if(inningDto.hitBall()) {
             inningDto.moveBase();
+
+            battingStat.addHit();
+            battingStatusRepository.save(battingStat);
+
             updateToNextBatter(inningDto);
             return inningDto;
         }
@@ -109,6 +117,11 @@ public class GameService {
         checkBallCount(game, inningDto, inningDto.getBallCount());
 
         return inningDto;
+    }
+
+    private BattingStat getNowBatterStat(Long gameId, Long batterNumber) {
+        return battingStatusRepository.findByGameIdAndPlayerId(gameId, batterNumber)
+                .orElseThrow(RuntimeException::new);
     }
 
     private void updateToNextBatter(InningDto inningDto) {
@@ -128,18 +141,23 @@ public class GameService {
 
     private void checkBallCount(Game game, InningDto inningDto, String ballCount) {
         BallCountDto ballCountDto = new BallCountDto(ballCount);
+        BattingStat battingStat = getNowBatterStat(game.getGameId(), inningDto.getBatterNumber());
 
         LOGGER.debug("ballCountDto : {}", ballCountDto);
 
         if(ballCountDto.isOut()) {
             inningDto.addOutCount();
             checkThreeOut(game, inningDto);
+            battingStat.addOut();
         }
 
         if(ballCountDto.isFourBall()) {
             inningDto.moveBase();
             updateToNextBatter(inningDto);
+            battingStat.addHit();
         }
+
+        battingStatusRepository.save(battingStat);
     }
 
     public List<Inning> getTeamInnings (Game game, Long teamId) {
