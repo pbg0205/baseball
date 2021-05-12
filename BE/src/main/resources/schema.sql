@@ -24,9 +24,7 @@ CREATE TABLE IF NOT EXISTS `baseball`.`TEAM`
     `TEAM_ID`   INT          NOT NULL AUTO_INCREMENT,
     `TEAM_NAME` VARCHAR(200) NOT NULL DEFAULT '',
     PRIMARY KEY (`TEAM_ID`)
-)
-    ENGINE = InnoDB;
-
+)DEFAULT CHARSET=utf8;
 
 -- -----------------------------------------------------
 -- Table `baseball`.`GAME`
@@ -40,6 +38,7 @@ CREATE TABLE IF NOT EXISTS `baseball`.`GAME`
     `HOME_TEAM_SCORE` INT NOT NULL DEFAULT 0,
     `AWAY_TEAM_ID`    INT NOT NULL,
     `AWAY_TEAM_SCORE` INT NOT NULL DEFAULT 0,
+    `NOW_INNING_ID`   INT NOT NULL,
     PRIMARY KEY (`GAME_ID`),
     INDEX             `fk_GAME_TEAM1_idx` (`HOME_TEAM_ID` ASC),
     INDEX             `fk_GAME_TEAM2_idx` (`AWAY_TEAM_ID` ASC),
@@ -53,9 +52,7 @@ CREATE TABLE IF NOT EXISTS `baseball`.`GAME`
             REFERENCES `baseball`.`TEAM` (`TEAM_ID`)
             ON DELETE NO ACTION
             ON UPDATE NO ACTION
-)
-    ENGINE = InnoDB;
-
+)DEFAULT CHARSET=utf8;
 
 -- -----------------------------------------------------
 -- Table `baseball`.`PLAYER`
@@ -67,16 +64,16 @@ CREATE TABLE IF NOT EXISTS `baseball`.`PLAYER`
     `PLAYER_ID`   INT          NOT NULL AUTO_INCREMENT,
     `TEAM_ID`     INT          NOT NULL,
     `PLAYER_NAME` VARCHAR(200) NOT NULL DEFAULT '',
-    `IS_PICHER`   TINYINT      NULL     DEFAULT 0,
+    `IS_PITCHER`   BOOLEAN     DEFAULT FALSE,
     PRIMARY KEY (`PLAYER_ID`),
     INDEX         `fk_PLAYER_TEAM_idx` (`TEAM_ID` ASC),
     CONSTRAINT `fk_PLAYER_TEAM`
         FOREIGN KEY (`TEAM_ID`)
             REFERENCES `baseball`.`TEAM` (`TEAM_ID`)
             ON DELETE NO ACTION
-            ON UPDATE NO ACTION
-)
-    ENGINE = InnoDB;
+            ON UPDATE NO ACTION,
+    TEAM_KEY INT
+)DEFAULT CHARSET=utf8;
 
 
 -- -----------------------------------------------------
@@ -88,6 +85,7 @@ CREATE TABLE IF NOT EXISTS `baseball`.`INNING`
 (
     `INNING_ID`       INT          NOT NULL,
     `GAME_ID`         INT          NOT NULL,
+    `TEAM_ID`         INT          NOT NULL,
     `NOW_BATTER_ID`   INT          NOT NULL,
     `NOW_PITCHER_ID`  INT          NOT NULL,
     `INNING_NUMBER`   INT          NOT NULL DEFAULT 1,
@@ -113,9 +111,9 @@ CREATE TABLE IF NOT EXISTS `baseball`.`INNING`
         FOREIGN KEY (`NOW_PITCHER_ID`)
             REFERENCES `baseball`.`PLAYER` (`PLAYER_ID`)
             ON DELETE NO ACTION
-            ON UPDATE NO ACTION
-)
-    ENGINE = InnoDB;
+            ON UPDATE NO ACTION,
+    GAME_KEY INT
+)DEFAULT CHARSET=utf8;
 
 
 -- -----------------------------------------------------
@@ -145,8 +143,7 @@ CREATE TABLE IF NOT EXISTS `baseball`.`BATTING_STAT`
             REFERENCES `baseball`.`PLAYER` (`PLAYER_ID`)
             ON DELETE NO ACTION
             ON UPDATE NO ACTION
-)
-    ENGINE = InnoDB;
+)DEFAULT CHARSET=utf8;
 
 
 -- -----------------------------------------------------
@@ -172,8 +169,7 @@ CREATE TABLE IF NOT EXISTS `baseball`.`MATCH`
             REFERENCES `baseball`.`TEAM` (`TEAM_ID`)
             ON DELETE NO ACTION
             ON UPDATE NO ACTION
-)
-    ENGINE = InnoDB;
+)DEFAULT CHARSET=utf8;
 
 
 SET SQL_MODE = @OLD_SQL_MODE;

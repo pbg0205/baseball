@@ -14,6 +14,8 @@ public class GameDto {
     private String awayTeamName;
     private int awayTeamPoint;
 
+    private Long nowInningId;
+
     public GameDto(Game game, Team homeTeam, Team awayTeam) {
         this.gameId = game.getGameId();
         this.homeTeamId = homeTeam.getTeamId();
@@ -22,6 +24,7 @@ public class GameDto {
         this.awayTeamId = awayTeam.getTeamId();
         this.awayTeamName = awayTeam.getTeamName();
         this.awayTeamPoint = game.getAwayTeamScore();
+        this.nowInningId = game.getNowInningId();
     }
 
     public Long getGameId() {
@@ -50,5 +53,23 @@ public class GameDto {
 
     public int getAwayTeamPoint() {
         return awayTeamPoint;
+    }
+
+    public Long getNowInningId() {
+        return nowInningId;
+    }
+
+    @Override
+    public String toString() {
+        return "GameDto{" +
+                "gameId=" + gameId +
+                ", homeTeamId=" + homeTeamId +
+                ", homeTeamName='" + homeTeamName + '\'' +
+                ", homeTeamPoint=" + homeTeamPoint +
+                ", awayTeamId=" + awayTeamId +
+                ", awayTeamName='" + awayTeamName + '\'' +
+                ", awayTeamPoint=" + awayTeamPoint +
+                ", nowInningId=" + nowInningId +
+                '}';
     }
 }
