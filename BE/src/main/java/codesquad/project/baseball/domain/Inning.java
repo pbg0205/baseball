@@ -1,11 +1,13 @@
 package codesquad.project.baseball.domain;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.Table;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+@Table("INNING")
 public class Inning {
     @Id
     private Long inningId;
@@ -92,7 +94,7 @@ public class Inning {
 
     public void updateToNextBatterId(Long batterId) {
         this.nowBatterId = batterId;
-        this.nowBaseStatus = "";
+        this.nowBaseStatus = new ArrayList<>();
     }
 
     @Override
