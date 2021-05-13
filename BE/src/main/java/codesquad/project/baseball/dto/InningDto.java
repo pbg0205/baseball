@@ -11,10 +11,14 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import java.util.Arrays;
 import java.util.List;
 
-@JsonPropertyOrder({"inningId", "inning_number", "attack_team_id", "ball_count", "out_count", "pitcher_name",
+@JsonPropertyOrder({"inning_id", "game_id", "inning_number", "attack_team_id", "ball_count", "out_count", "pitcher_name",
         "pitcher_number", "batter_name", "batter_number", "basse_status", "score", "home_team_score", "away_team_score"})
 public class InningDto {
+    @JsonProperty("inning_id")
     private Long inningId;
+
+    @JsonProperty("game_id")
+    private Long gameId;
 
     @JsonProperty("innning_number")
     private int inningNumber;
@@ -53,6 +57,7 @@ public class InningDto {
 
     public InningDto(Inning inning, Game game, Player nowBatter, Player nowPitcher) {
         this.inningId = inning.getInningId();
+        this.gameId = inning.getGameId();
         this.inningNumber = inning.getInningNumber();
         this.teamId = inning.getTeamId();
         this.nowBallCount = inning.getNowBallCount();
@@ -61,17 +66,18 @@ public class InningDto {
         this.pitchId = inning.getNowPitcherId();
         this.batterName = nowPitcher.getPlayerName();
         this.batterId = inning.getNowBatterId();
-        this.baseStatus = inning.getNowBaseStatus();
+        this.baseStatus = parseBaseStatus(inning.getNowBaseStatus());
         this.score = inning.getScore();
         this.homeTeamScore = game.getHomeTeamScore();
         this.awayTeamScore = game.getAwayTeamScore();
     }
 
     @JsonCreator
-    public InningDto(Long inningId, int inningNumber, Long teamId, String nowBallCount, int nowOutCount,
+    public InningDto(Long inningId, Long gameId, int inningNumber, Long teamId, String nowBallCount, int nowOutCount,
                      String pitcherName, Long pitchId, String batterName, Long batterId,
                      List<String> baseStatus, int score, int homeTeamScore, int awayTeamScore) {
         this.inningId = inningId;
+        this.gameId = gameId;
         this.inningNumber = inningNumber;
         this.teamId = teamId;
         this.nowBallCount = nowBallCount;
@@ -90,6 +96,10 @@ public class InningDto {
         return inningId;
     }
 
+    public Long getGameId() {
+        return gameId;
+    }
+
     public Long getTeamId() {
         return teamId;
     }
@@ -106,16 +116,8 @@ public class InningDto {
         return nowOutCount;
     }
 
-    public String getPitcherName() {
-        return pitcherName;
-    }
-
     public Long getPitchId() {
         return pitchId;
-    }
-
-    public String getBatterName() {
-        return batterName;
     }
 
     public Long getBatterId() {
@@ -130,12 +132,8 @@ public class InningDto {
         return score;
     }
 
-    public int getHomeTeamScore() {
-        return homeTeamScore;
-    }
-
-    public int getAwayTeamScore() {
-        return awayTeamScore;
+    private List<String> parseBaseStatus(String nowBaseStatus) {
+        return Arrays.asList(nowBaseStatus.split(""));
     }
 
     public void appendBallCount(char ballCountValue) {
@@ -147,7 +145,7 @@ public class InningDto {
         this.nowBallCount = "";
     }
 
-    public boolean isAbleToChangeInning() {
+    public boolean isThreeOut() {
         return nowOutCount == 3;
     }
 
@@ -197,5 +195,25 @@ public class InningDto {
     public void updateToNextBatter(Player batter) {
         this.batterName = batter.getPlayerName();
         this.batterId = batter.getPlayerId();
+    }
+
+    @Override
+    public String toString() {
+        return "InningDto{" +
+                "inningId=" + inningId +
+                ", gameId=" + gameId +
+                ", inningNumber=" + inningNumber +
+                ", teamId=" + teamId +
+                ", nowBallCount='" + nowBallCount + '\'' +
+                ", nowOutCount=" + nowOutCount +
+                ", pitcherName='" + pitcherName + '\'' +
+                ", pitchId=" + pitchId +
+                ", batterName='" + batterName + '\'' +
+                ", batterId=" + batterId +
+                ", baseStatus=" + baseStatus +
+                ", score=" + score +
+                ", homeTeamScore=" + homeTeamScore +
+                ", awayTeamScore=" + awayTeamScore +
+                '}';
     }
 }
