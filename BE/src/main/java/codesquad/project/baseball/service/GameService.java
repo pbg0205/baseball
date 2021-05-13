@@ -114,6 +114,8 @@ public class GameService {
             return inningDto;
         }
 
+        LOGGER.debug("inningDto : {}", inningDto);
+
         checkBallCount(game, inningDto, inningDto.getNowBallCount());
 
         return inningDto;
@@ -133,7 +135,8 @@ public class GameService {
         LOGGER.debug("nextBatterId : {}", nextBatterId);
         LOGGER.debug("nextBatterPlayer : {}", nextBatterPlayer);
 
-        inning.updateToNextBatterId(nextBatterId);
+        inningDto.updateToNextBatter(nextBatterPlayer);
+        inning.updateFromInningDto(inningDto);
         inningRepository.save(inning);
 
         inningDto.updateToNextBatter(nextBatterPlayer);
@@ -141,13 +144,14 @@ public class GameService {
 
     private void checkBallCount(Game game, InningDto inningDto, String ballCount) {
         BallCountDto ballCountDto = new BallCountDto(ballCount);
+        Inning inning = inningRepository.findById(inningDto.getInningId())
+                .orElseThrow(RuntimeException::new);
         BattingStat battingStat = getNowBatterStat(game.getGameId(), inningDto.getBatterId());
 
         LOGGER.debug("ballCountDto : {}", ballCountDto);
 
         if(ballCountDto.isOut()) {
             inningDto.addOutCount();
-            checkThreeOut(game, inningDto);
             battingStat.addOut();
         }
 
@@ -157,7 +161,13 @@ public class GameService {
             battingStat.addHit();
         }
 
+        inning.updateFromInningDto(inningDto);
+        inningRepository.save(inning);
         battingStatusRepository.save(battingStat);
+
+        if(inningDto.isThreeOut()) {
+            changeNextInning(game, inningDto);
+        }
     }
 
     public List<Inning> getTeamInnings (Game game, Long teamId) {
@@ -167,11 +177,7 @@ public class GameService {
                 .collect(Collectors.toList());
     }
 
-    private void checkThreeOut(Game game, InningDto inningDto) {
-        if(!inningDto.isAbleToChangeInning()) {
-            return;
-        }
-
+    private void changeNextInning(Game game, InningDto inningDto) {
         Long attackTeamId = inningDto.getTeamId();
         Long depenseTeamId = getDepenseTeamId(game, attackTeamId);
         List<Inning> depenseTeamList = getTeamInnings(game, depenseTeamId);
