@@ -10,7 +10,7 @@ public class PlayerStatDto {
     @JsonIgnore
     private Long playerId;
 
-    @JsonProperty("player_id")
+    @JsonProperty("player_name")
     private String playerName;
 
     @JsonProperty("at_bat")
