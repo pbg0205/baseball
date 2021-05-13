@@ -3,15 +3,15 @@ package codesquad.project.baseball.domain;
 import java.util.Arrays;
 
 public enum BallCount {
-    STRIKE(1, 'S'),
-    BALL(2, 'B'),
-    HIT(3, 'H');
+    STRIKE(1, "S"),
+    BALL(2, "B"),
+    HIT(3, "H");
 
     private int ballCountNumber;
 
-    private char ballTypeValue;
+    private String ballTypeValue;
 
-    BallCount(int ballCountNumber, char ballTypeValue) {
+    BallCount(int ballCountNumber, String ballTypeValue) {
         this.ballCountNumber = ballCountNumber;
         this.ballTypeValue = ballTypeValue;
     }
@@ -20,11 +20,11 @@ public enum BallCount {
         return ballCountNumber;
     }
 
-    public char getBallTypeValue() {
+    public String getBallTypeValue() {
         return ballTypeValue;
     }
 
-    public static char findBallTypeValue(int ballCountNumber) {
+    public static String findBallTypeValue(int ballCountNumber) {
         return Arrays.stream(values()).filter(ballCount -> ballCount.ballCountNumber == ballCountNumber)
                 .findFirst().orElseThrow(RuntimeException::new).ballTypeValue;
     }

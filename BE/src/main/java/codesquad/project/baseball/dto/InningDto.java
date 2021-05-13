@@ -8,11 +8,12 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 @JsonPropertyOrder({"inning_id", "game_id", "inning_number", "attack_team_id", "ball_count", "out_count", "pitcher_name",
-        "pitcher_number", "batter_name", "batter_number", "basse_status", "score", "home_team_score", "away_team_score"})
+        "pitcher_number", "batter_name", "batter_number", "base_status", "score", "home_team_score", "away_team_score"})
 public class InningDto {
     @JsonProperty("inning_id")
     private Long inningId;
@@ -20,14 +21,14 @@ public class InningDto {
     @JsonProperty("game_id")
     private Long gameId;
 
-    @JsonProperty("innning_number")
+    @JsonProperty("inning_number")
     private int inningNumber;
 
     @JsonProperty("attack_team_id")
     private Long teamId;
 
     @JsonProperty("ball_count")
-    private String nowBallCount;
+    private List<String> nowBallCount;
 
     @JsonProperty("out_count")
     private int nowOutCount;
@@ -60,20 +61,20 @@ public class InningDto {
         this.gameId = inning.getGameId();
         this.inningNumber = inning.getInningNumber();
         this.teamId = inning.getTeamId();
-        this.nowBallCount = inning.getNowBallCount();
+        this.nowBallCount = parseStringToList(inning.getNowBallCount());
         this.nowOutCount = inning.getNowOutCount();
         this.pitcherName = nowBatter.getPlayerName();
         this.pitchId = inning.getNowPitcherId();
         this.batterName = nowPitcher.getPlayerName();
         this.batterId = inning.getNowBatterId();
-        this.baseStatus = parseBaseStatus(inning.getNowBaseStatus());
+        this.baseStatus = parseStringToList(inning.getNowBaseStatus());
         this.score = inning.getScore();
         this.homeTeamScore = game.getHomeTeamScore();
         this.awayTeamScore = game.getAwayTeamScore();
     }
 
     @JsonCreator
-    public InningDto(Long inningId, Long gameId, int inningNumber, Long teamId, String nowBallCount, int nowOutCount,
+    public InningDto(Long inningId, Long gameId, int inningNumber, Long teamId, List<String> nowBallCount, int nowOutCount,
                      String pitcherName, Long pitchId, String batterName, Long batterId,
                      List<String> baseStatus, int score, int homeTeamScore, int awayTeamScore) {
         this.inningId = inningId;
@@ -108,7 +109,7 @@ public class InningDto {
         return inningNumber;
     }
 
-    public String getNowBallCount() {
+    public List<String> getNowBallCount() {
         return nowBallCount;
     }
 
@@ -132,30 +133,31 @@ public class InningDto {
         return score;
     }
 
-    private List<String> parseBaseStatus(String nowBaseStatus) {
+    private List<String> parseStringToList(String nowBaseStatus) {
         return Arrays.asList(nowBaseStatus.split(""));
     }
 
-    public void appendBallCount(char ballCountValue) {
-        this.nowBallCount += ballCountValue;
+    public void appendBallCount(String ballCountValue) {
+        nowBallCount.add(ballCountValue);
     }
 
     public void addOutCount() {
         this.nowOutCount++;
-        this.nowBallCount = "";
+        this.nowBallCount = new ArrayList<>();
     }
 
     public boolean isThreeOut() {
         return nowOutCount == 3;
     }
 
-    public void moveBase() {
+    public void moveBase(Game game, Long teamId) {
         List<String> hit1Status = Arrays.asList(new String[]{"1"});
         List<String> hit2Status = Arrays.asList(new String[]{"1","2"});
         List<String> hit3Status = Arrays.asList(new String[]{"1", "2", "3"});
 
         if(this.baseStatus.equals(hit3Status)) {
             score++;
+            game.addScore(teamId);
         }
 
         if(this.baseStatus.equals(hit2Status)) {
@@ -170,21 +172,26 @@ public class InningDto {
             this.baseStatus = hit1Status;
         }
 
-        nowBallCount = "";
+        nowBallCount = new ArrayList<>();
     }
 
     public boolean hitBall () {
-        for (char ball : nowBallCount.toCharArray()) {
-            if(ball == BallCount.HIT.getBallTypeValue()) {
+        for (String ball : nowBallCount) {
+            if(ball.equals(BallCount.HIT.getBallTypeValue())) {
                 return true;
             }
         }
         return false;
     }
 
-    public void updateNextInningAndBatter(Inning inning, Player nextBatter) {
+    public void updateNextInningStatus(Inning inning, Player batter, Player pitcher, Long teamId) {
         updateToNextInning(inning);
-        updateToNextBatter(nextBatter);
+        updateToBatter(batter);
+        updatePitcher(pitcher);
+        updateTeamId(teamId);
+        clearBaseStatus();
+        clearBallCount();
+        clearOutCount();
     }
 
     public void updateToNextInning(Inning nextInning) {
@@ -192,9 +199,30 @@ public class InningDto {
         this.inningNumber = nextInning.getInningNumber();
     }
 
-    public void updateToNextBatter(Player batter) {
+    public void updateToBatter(Player batter) {
         this.batterName = batter.getPlayerName();
         this.batterId = batter.getPlayerId();
+    }
+
+    private void updateTeamId(Long teamId) {
+        this.teamId = teamId;
+    }
+
+    private void updatePitcher(Player pitcher) {
+        this.pitchId = pitcher.getPlayerId();
+        this.pitcherName = pitcher.getPlayerName();
+    }
+
+    private void clearBallCount() {
+        this.nowBallCount = new ArrayList<>();
+    }
+
+    private void clearBaseStatus() {
+        this.baseStatus = new ArrayList<>();
+    }
+
+    private void clearOutCount() {
+        this.nowOutCount = 0;
     }
 
     @Override

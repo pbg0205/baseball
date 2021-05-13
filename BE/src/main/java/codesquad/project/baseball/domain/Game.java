@@ -59,8 +59,23 @@ public class Game {
         return innings;
     }
 
+    public void addScore(Long teamId) {
+        if(teamId == homeTeamId) {
+            this.homeTeamScore++;
+        }
+
+        if(teamId == awayTeamId) {
+            this.awayTeamScore++;
+        }
+    }
+
     public void addInning(Inning inning) {
         innings.add(inning);
+    }
+
+    public Inning getInningByInningId(Long inningId) {
+        return innings.stream().filter(inning -> inning.getInningId() == inningId)
+                .findFirst().orElseThrow(RuntimeException::new);
     }
 
     @Override
