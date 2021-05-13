@@ -98,7 +98,7 @@ public class GameService {
         inningDto.appendBallCount(ballTypeValue);
 
         LOGGER.debug("ballTypeValue : {}", ballTypeValue);
-        LOGGER.debug("ballCount : {}", inningDto.getBallCount());
+        LOGGER.debug("ballCount : {}", inningDto.getNowBallCount());
 
         if(inningDto.hitBall()) {
             inningDto.moveBase();
@@ -106,7 +106,7 @@ public class GameService {
             return inningDto;
         }
 
-        checkBallCount(game, inningDto, inningDto.getBallCount());
+        checkBallCount(game, inningDto, inningDto.getNowBallCount());
 
         return inningDto;
     }
@@ -114,7 +114,7 @@ public class GameService {
     private void updateToNextBatter(InningDto inningDto) {
         Inning inning = inningRepository.findById(inningDto.getInningId()).orElseThrow(RuntimeException::new);
 
-        Long nextBatterId = getNextBatterId(inningDto.getTeamId(), inningDto.getBatterNumber());
+        Long nextBatterId = getNextBatterId(inningDto.getTeamId(), inningDto.getBatterId());
         Player nextBatterPlayer = findBatter(inningDto.getTeamId(), nextBatterId);
 
         LOGGER.debug("nextBatterId : {}", nextBatterId);
