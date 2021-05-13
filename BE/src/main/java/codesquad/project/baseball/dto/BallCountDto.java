@@ -2,6 +2,8 @@ package codesquad.project.baseball.dto;
 
 import codesquad.project.baseball.domain.BallCount;
 
+import java.util.List;
+
 public class BallCountDto {
     private static final int THREE_STRIKE = 3;
     private static final int FOUR_BALL = 4;
@@ -9,25 +11,25 @@ public class BallCountDto {
     private int strike;
     private int ball;
 
-    public BallCountDto(String ballCount) {
-        this.strike = countStrike(ballCount);
-        this.ball = countBall(ballCount);
+    public BallCountDto(List<String> ballCount) {
+        this.strike = countBallType(ballCount, BallCount.STRIKE.getBallTypeValue());
+        this.ball = countBallType(ballCount, BallCount.BALL.getBallTypeValue());
     }
 
-    private int countStrike(String ballCount) {
+    private int countBallType(List<String> ballCount, String ballType) {
         int count = 0;
-        for (char ballType : ballCount.toCharArray()) {
-            if(ballType == BallCount.STRIKE.getBallTypeValue()) {
+        for (String ball : ballCount) {
+            if(ball.equals(ballType)) {
                 count++;
             }
         }
         return count;
     }
 
-    private int countBall(String ballCount) {
+    private int countBall(List<String> ballCount) {
         int count = 0;
-        for (char ballType : ballCount.toCharArray()) {
-            if(ballType == BallCount.BALL.getBallTypeValue()) {
+        for (String ballType : ballCount) {
+            if(ballType.equals(BallCount.BALL.getBallTypeValue())) {
                 count++;
             }
         }

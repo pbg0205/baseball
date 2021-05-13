@@ -4,8 +4,6 @@ import codesquad.project.baseball.dto.InningDto;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Table;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 @Table("INNING")
@@ -97,13 +95,13 @@ public class Inning {
         this.nowPitcherId = inningDto.getPitchId();
         this.inningNumber = inningDto.getInningNumber();
         this.score = inningDto.getScore();
-        this.nowBallCount = inningDto.getNowBallCount();
+        this.nowBallCount = convertListToString(inningDto.getNowBallCount());
         this.nowOutCount = inningDto.getNowOutCount();
-        this.nowBaseStatus = convertBaseStatusString(inningDto.getBaseStatus());
+        this.nowBaseStatus = convertListToString(inningDto.getBaseStatus());
     }
 
-    private String convertBaseStatusString(List<String> baseStatus) {
-        return String.join("", baseStatus);
+    private String convertListToString(List<String> list) {
+        return String.join("", list);
     }
 
     @Override
