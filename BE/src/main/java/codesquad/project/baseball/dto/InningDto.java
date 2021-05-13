@@ -184,20 +184,14 @@ public class InningDto {
         return false;
     }
 
-    public void updateInningDto(Inning inning, Game game, Player nextBatter, Player pitcher) {
-        this.inningId = inning.getInningId();
-        this.inningNumber = inning.getInningNumber();
-        this.teamId = inning.getTeamId();
-        this.nowBallCount = inning.getNowBallCount();
-        this.nowOutCount = inning.getNowOutCount();
-        this.pitcherName = pitcher.getPlayerName();
-        this.pitchId = inning.getNowPitcherId();
-        this.batterName = nextBatter.getPlayerName();
-        this.batterId = inning.getNowBatterId();
-        this.baseStatus = inning.getNowBaseStatus();
-        this.score = inning.getScore();
-        this.homeTeamScore = game.getHomeTeamScore();
-        this.awayTeamScore = game.getAwayTeamScore();
+    public void updateNextInningAndBatter(Inning inning, Player nextBatter) {
+        updateToNextInning(inning);
+        updateToNextBatter(nextBatter);
+    }
+
+    public void updateToNextInning(Inning nextInning) {
+        this.inningId = nextInning.getInningId();
+        this.inningNumber = nextInning.getInningNumber();
     }
 
     public void updateToNextBatter(Player batter) {

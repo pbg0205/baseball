@@ -96,7 +96,7 @@ public class GameService {
 
     public InningDto pitch(Long gameId, Long inningId, InningDto inningDto) {
         Game game = gameRepository.findById(gameId).orElseThrow(RuntimeException::new);
-        BattingStat battingStat = getNowBatterStat(gameId, inningDto.getBatterNumber());
+        BattingStat battingStat = getNowBatterStat(gameId, inningDto.getBatterId());
         char ballTypeValue = BallCount.findBallTypeValue(RandomUtils.generateBallCountNumber());
 
         inningDto.appendBallCount(ballTypeValue);
@@ -141,7 +141,7 @@ public class GameService {
 
     private void checkBallCount(Game game, InningDto inningDto, String ballCount) {
         BallCountDto ballCountDto = new BallCountDto(ballCount);
-        BattingStat battingStat = getNowBatterStat(game.getGameId(), inningDto.getBatterNumber());
+        BattingStat battingStat = getNowBatterStat(game.getGameId(), inningDto.getBatterId());
 
         LOGGER.debug("ballCountDto : {}", ballCountDto);
 
@@ -192,7 +192,7 @@ public class GameService {
         LOGGER.debug("nextBatter : {}", nextBatter);
 
         if (nextInning.getInningNumber() == 1) {
-            inningDto.updateInningDto(nextInning, game, nextBatter, pitcher);
+            inningDto.updateNextInningAndBatter(nextInning, nextBatter);
             return;
         }
 
@@ -201,6 +201,6 @@ public class GameService {
 
         nextBatter = findBatter(depenseTeamId, getNextBatterId(depenseTeamId, prevInning.getNowBatterId()));
 
-        inningDto.updateInningDto(nextInning, game, nextBatter, pitcher);
+        inningDto.updateNextInningAndBatter(nextInning, nextBatter);
     }
 }
