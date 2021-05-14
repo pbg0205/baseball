@@ -4,6 +4,7 @@ import codesquad.project.baseball.controller.GameController;
 import codesquad.project.baseball.domain.*;
 import codesquad.project.baseball.dto.BallCountDto;
 import codesquad.project.baseball.dto.GameDto;
+import codesquad.project.baseball.dto.GameListDto;
 import codesquad.project.baseball.dto.InningDto;
 import codesquad.project.baseball.repository.BattingStatusRepository;
 import codesquad.project.baseball.repository.GameRepository;
@@ -31,6 +32,10 @@ public class GameService {
         this.gameRepository = gameRepository;
         this.teamRepository = teamRepository;
         this.battingStatusRepository = battingStatusRepository;
+    }
+
+    public GameListDto getGameListDto() {
+        return new GameListDto(getGameList());
     }
 
     public List<GameDto> getGameList() {

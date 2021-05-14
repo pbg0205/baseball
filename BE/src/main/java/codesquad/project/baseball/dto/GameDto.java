@@ -8,24 +8,23 @@ public class GameDto {
     @JsonProperty("game_id")
     private Long gameId;
 
-
     @JsonProperty("home_team_id")
     private Long homeTeamId;
 
-    @JsonProperty("home_team_name")
+    @JsonProperty("home_team")
     private String homeTeamName;
 
 
-    @JsonProperty("home_team_point")
+    @JsonProperty("home_team_score")
     private int homeTeamPoint;
 
     @JsonProperty("away_team_id")
     private Long awayTeamId;
 
-    @JsonProperty("away_team_name")
+    @JsonProperty("away_team")
     private String awayTeamName;
 
-    @JsonProperty("away_team_point")
+    @JsonProperty("away_team_score")
     private int awayTeamPoint;
 
     @JsonProperty("now_inning_id")

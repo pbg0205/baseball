@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class BattingStatusDto {
-    @JsonIgnore
+    @JsonProperty("game_id")
     private Long gameId;
 
     @JsonProperty("home_team")

@@ -26,7 +26,7 @@ public class GameController {
     @GetMapping
     public ResponseEntity getGamePage() {
         LOGGER.debug("GET METHOD : /baseball");
-        return new ResponseEntity(gameService.getGameList(), HttpStatus.OK);
+        return new ResponseEntity(gameService.getGameListDto(), HttpStatus.OK);
     }
 
     @GetMapping("/{gameId}/inning/{inningId}")
