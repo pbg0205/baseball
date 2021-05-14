@@ -151,6 +151,7 @@ public class InningDto {
     }
 
     public void moveBase(Game game, Long teamId) {
+        List<String> hit0Status = Arrays.asList(new String[]{""});
         List<String> hit1Status = Arrays.asList(new String[]{"1"});
         List<String> hit2Status = Arrays.asList(new String[]{"1","2"});
         List<String> hit3Status = Arrays.asList(new String[]{"1", "2", "3"});
@@ -168,7 +169,7 @@ public class InningDto {
             this.baseStatus = hit2Status;
         }
 
-        if(this.baseStatus.size() == 0) {
+        if(this.baseStatus.size() == 0 || this.baseStatus.equals(hit0Status)) {
             this.baseStatus = hit1Status;
         }
 
