@@ -63,9 +63,9 @@ public class InningDto {
         this.teamId = inning.getTeamId();
         this.nowBallCount = parseStringToList(inning.getNowBallCount());
         this.nowOutCount = inning.getNowOutCount();
-        this.pitcherName = nowBatter.getPlayerName();
+        this.pitcherName = nowPitcher.getPlayerName();
         this.pitchId = inning.getNowPitcherId();
-        this.batterName = nowPitcher.getPlayerName();
+        this.batterName = nowBatter.getPlayerName();
         this.batterId = inning.getNowBatterId();
         this.baseStatus = parseStringToList(inning.getNowBaseStatus());
         this.score = inning.getScore();
