@@ -1,9 +1,11 @@
 package codesquad.project.baseball.domain;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.Table;
 
 import java.util.Objects;
 
+@Table("PLAYER")
 public class Player {
     @Id
     private Long playerId;

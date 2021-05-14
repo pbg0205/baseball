@@ -2,6 +2,7 @@ package codesquad.project.baseball.controller;
 
 import codesquad.project.baseball.dto.InningDto;
 import codesquad.project.baseball.service.GameService;
+import codesquad.project.baseball.service.ScoreService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -15,9 +16,11 @@ public class GameController {
     private static final Logger LOGGER = LoggerFactory.getLogger(GameController.class);
 
     private final GameService gameService;
+    private final ScoreService scoreService;
 
-    public GameController(GameService gameService) {
+    public GameController(GameService gameService, ScoreService scoreService) {
         this.gameService = gameService;
+        this.scoreService = scoreService;
     }
 
     @GetMapping
@@ -36,5 +39,10 @@ public class GameController {
     public ResponseEntity pitch(@PathVariable Long gameId, @PathVariable Long inningId,
                                 @RequestBody InningDto inningDto) {
         return new ResponseEntity(gameService.pitch(gameId, inningId, inningDto), HttpStatus.OK);
+    }
+
+    @GetMapping("{gameId}/score/{teamId}")
+    public ResponseEntity getScorePage(@PathVariable Long gameId, @PathVariable Long teamId) {
+        return new ResponseEntity(scoreService.getBattingStatFromTeamId(gameId, teamId), HttpStatus.OK);
     }
 }

@@ -5,14 +5,15 @@ import codesquad.project.baseball.domain.*;
 import codesquad.project.baseball.dto.BallCountDto;
 import codesquad.project.baseball.dto.GameDto;
 import codesquad.project.baseball.dto.InningDto;
+import codesquad.project.baseball.repository.BattingStatusRepository;
 import codesquad.project.baseball.repository.GameRepository;
-import codesquad.project.baseball.repository.InningRepository;
 import codesquad.project.baseball.repository.TeamRepository;
 import codesquad.project.baseball.utils.RandomUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -22,14 +23,14 @@ public class GameService {
     private static final Logger LOGGER = LoggerFactory.getLogger(GameController.class);
 
     private final GameRepository gameRepository;
-    private final InningRepository inningRepository;
     private final TeamRepository teamRepository;
+    private final BattingStatusRepository battingStatusRepository;
 
-    public GameService(GameRepository gameRepository, InningRepository inningRepository,
-                       TeamRepository teamRepository) {
+    public GameService(GameRepository gameRepository, TeamRepository teamRepository,
+                       BattingStatusRepository battingStatusRepository) {
         this.gameRepository = gameRepository;
-        this.inningRepository = inningRepository;
         this.teamRepository = teamRepository;
+        this.battingStatusRepository = battingStatusRepository;
     }
 
     public List<GameDto> getGameList() {
@@ -56,8 +57,8 @@ public class GameService {
         return new InningDto(nowInning, game, nowBatter, nowPitcher);
     }
 
-    private Long getDepenseTeamId(Game game, Long teamId) {
-        if(game.getHomeTeamScore() != teamId) {
+    private Long getDepenseTeamId(Game game, Long attackTeamId) {
+        if (game.getHomeTeamId() == attackTeamId) {
             return game.getAwayTeamId();
         }
         return game.getHomeTeamId();
@@ -80,7 +81,7 @@ public class GameService {
 
     private Long getNextBatterId(Long teamId, Long batterId) {
         Long nextBatterId = batterId + 1;
-        if(nextBatterId > teamId * 9) {
+        if (nextBatterId > teamId * 9) {
             nextBatterId -= 9;
         }
         return nextBatterId;
@@ -93,71 +94,97 @@ public class GameService {
 
     public InningDto pitch(Long gameId, Long inningId, InningDto inningDto) {
         Game game = gameRepository.findById(gameId).orElseThrow(RuntimeException::new);
-        char ballTypeValue = BallCount.findBallTypeValue(RandomUtils.generateBallCountNumber());
+        Inning inning = game.getInningByInningId(inningId);
+        BattingStat battingStat = getNowBatterStat(gameId, inningDto.getBatterId());
+        String ballTypeValue = BallCount.findBallTypeValue(RandomUtils.generateBallCountNumber());
 
         inningDto.appendBallCount(ballTypeValue);
 
         LOGGER.debug("ballTypeValue : {}", ballTypeValue);
-        LOGGER.debug("ballCount : {}", inningDto.getBallCount());
+        LOGGER.debug("ballCount : {}", inningDto.getNowBallCount());
 
-        if(inningDto.hitBall()) {
-            inningDto.moveBase();
-            updateToNextBatter(inningDto);
+        if (inningDto.hitBall()) {
+            inningDto.moveBase(game, inningDto.getTeamId());
+
+            battingStat.addHit();
+            battingStatusRepository.save(battingStat);
+
+            updateToNextBatter(inning, inningDto);
+            gameRepository.save(game);
             return inningDto;
         }
 
-        checkBallCount(game, inningDto, inningDto.getBallCount());
+        LOGGER.debug("notHitInningDto : {}", inningDto);
+
+        checkBallCount(game, inning, inningDto, inningDto.getNowBallCount());
+
+        gameRepository.save(game);
 
         return inningDto;
     }
 
-    private void updateToNextBatter(InningDto inningDto) {
-        Inning inning = inningRepository.findById(inningDto.getInningId()).orElseThrow(RuntimeException::new);
+    private BattingStat getNowBatterStat(Long gameId, Long batterNumber) {
+        return battingStatusRepository.findByGameIdAndPlayerId(gameId, batterNumber)
+                .orElseThrow(RuntimeException::new);
+    }
 
-        Long nextBatterId = getNextBatterId(inningDto.getTeamId(), inningDto.getBatterNumber());
+    private void updateToNextBatter(Inning inning, InningDto inningDto) {
+        Long nextBatterId = getNextBatterId(inningDto.getTeamId(), inningDto.getBatterId());
         Player nextBatterPlayer = findBatter(inningDto.getTeamId(), nextBatterId);
 
         LOGGER.debug("nextBatterId : {}", nextBatterId);
         LOGGER.debug("nextBatterPlayer : {}", nextBatterPlayer);
 
-        inning.updateToNextBatterId(nextBatterId);
-        inningRepository.save(inning);
+        inningDto.updateToBatter(nextBatterPlayer);
+        inning.updateFromInningDto(inningDto);
 
-        inningDto.updateToNextBatter(nextBatterPlayer);
+        inningDto.updateToBatter(nextBatterPlayer);
     }
 
-    private void checkBallCount(Game game, InningDto inningDto, String ballCount) {
+    private void checkBallCount(Game game, Inning inning, InningDto inningDto, List<String> ballCount) {
         BallCountDto ballCountDto = new BallCountDto(ballCount);
+        BattingStat battingStat = getNowBatterStat(game.getGameId(), inningDto.getBatterId());
 
         LOGGER.debug("ballCountDto : {}", ballCountDto);
 
-        if(ballCountDto.isOut()) {
+        if (ballCountDto.isOut()) {
             inningDto.addOutCount();
-            checkThreeOut(game, inningDto);
+            updateToNextBatter(inning, inningDto);
+            battingStat.addOut();
         }
 
-        if(ballCountDto.isFourBall()) {
-            inningDto.moveBase();
-            updateToNextBatter(inningDto);
+        if (ballCountDto.isFourBall()) {
+            inningDto.moveBase(game, inningDto.getTeamId());
+            updateToNextBatter(inning, inningDto);
+            battingStat.addHit();
+        }
+
+        inning.updateFromInningDto(inningDto);
+
+        LOGGER.debug("updatedInning : {}", inning);
+
+        battingStatusRepository.save(battingStat);
+
+        if (inningDto.isThreeOut()) {
+            changeNextInning(game, inningDto);
         }
     }
 
-    public List<Inning> getTeamInnings (Game game, Long teamId) {
+    public List<Inning> getTeamInnings(Game game, Long teamId) {
         List<Inning> inningList = game.getInnings();
         return inningList.stream()
                 .filter(inning -> inning.getTeamId() == teamId)
                 .collect(Collectors.toList());
     }
 
-    private void checkThreeOut(Game game, InningDto inningDto) {
-        if(!inningDto.isAbleToChangeInning()) {
-            return;
-        }
-
+    private void changeNextInning(Game game, InningDto inningDto) {
         Long attackTeamId = inningDto.getTeamId();
         Long depenseTeamId = getDepenseTeamId(game, attackTeamId);
         List<Inning> depenseTeamList = getTeamInnings(game, depenseTeamId);
+        depenseTeamList.sort(Comparator.comparingInt(Inning::getInningNumber));
 
+
+        LOGGER.debug("attackTeam : {}", attackTeamId);
         LOGGER.debug("depenseTeam : {}", depenseTeamId);
 
         //TODO 9회말에 경기종료 조건 추가하기
@@ -174,15 +201,20 @@ public class GameService {
         LOGGER.debug("nextBatter : {}", nextBatter);
 
         if (nextInning.getInningNumber() == 1) {
-            inningDto.updateInningDto(nextInning, game, nextBatter, pitcher);
+            inningDto.updateNextInningStatus(nextInning, nextBatter, pitcher, depenseTeamId);
+            LOGGER.debug("nextBatter : {}", inningDto);
             return;
         }
 
         int prevInningIndex = nextInning.getInningNumber() - 2;
         Inning prevInning = depenseTeamList.get(prevInningIndex);
 
+        LOGGER.debug("prevInningIndex : {}", prevInningIndex);
+        LOGGER.debug("list : {}", depenseTeamList);
+        LOGGER.debug("prevInning : {}", prevInning);
+
         nextBatter = findBatter(depenseTeamId, getNextBatterId(depenseTeamId, prevInning.getNowBatterId()));
 
-        inningDto.updateInningDto(nextInning, game, nextBatter, pitcher);
+        inningDto.updateNextInningStatus(nextInning, nextBatter, pitcher, depenseTeamId);
     }
 }

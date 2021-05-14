@@ -1,11 +1,12 @@
 package codesquad.project.baseball.domain;
 
+import codesquad.project.baseball.dto.InningDto;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.Table;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
+@Table("INNING")
 public class Inning {
     @Id
     private Long inningId;
@@ -26,7 +27,7 @@ public class Inning {
 
     private int nowOutCount;
 
-    private List<String> nowBaseStatus = new ArrayList<>();
+    private String nowBaseStatus;
 
     public Inning(Long inningId, Long gameId, Long teamId, Long nowBatterId, Long nowPitcherId, int inningNumber,
                   int score, String nowBallCount, int nowOutCount, String nowBaseStatus) {
@@ -39,7 +40,7 @@ public class Inning {
         this.score = score;
         this.nowBallCount = nowBallCount;
         this.nowOutCount = nowOutCount;
-        this.nowBaseStatus = parseBaseStatus(nowBaseStatus);
+        this.nowBaseStatus = nowBaseStatus;
     }
 
     public Long getInningId() {
@@ -78,21 +79,29 @@ public class Inning {
         return nowOutCount;
     }
 
-    public List<String> getNowBaseStatus() {
+    public String getNowBaseStatus() {
         return nowBaseStatus;
-    }
-
-    private List<String> parseBaseStatus(String nowBaseStatus) {
-        return Arrays.asList(nowBaseStatus.split(""));
     }
 
     public boolean isSameInning(Long inningId) {
         return this.inningId == inningId;
     }
 
-    public void updateToNextBatterId(Long batterId) {
-        this.nowBatterId = batterId;
-        this.nowBaseStatus = "";
+    public void updateFromInningDto(InningDto inningDto) {
+        this.inningId = inningDto.getInningId();
+        this.gameId = inningDto.getGameId();
+        this.teamId = inningDto.getTeamId();
+        this.nowBatterId = inningDto.getBatterId();
+        this.nowPitcherId = inningDto.getPitchId();
+        this.inningNumber = inningDto.getInningNumber();
+        this.score = inningDto.getScore();
+        this.nowBallCount = convertListToString(inningDto.getNowBallCount());
+        this.nowOutCount = inningDto.getNowOutCount();
+        this.nowBaseStatus = convertListToString(inningDto.getBaseStatus());
+    }
+
+    private String convertListToString(List<String> list) {
+        return String.join("", list);
     }
 
     @Override

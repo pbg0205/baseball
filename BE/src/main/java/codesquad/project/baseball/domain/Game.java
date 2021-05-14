@@ -2,10 +2,12 @@ package codesquad.project.baseball.domain;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.MappedCollection;
+import org.springframework.data.relational.core.mapping.Table;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Table("GAME")
 public class Game {
     @Id
     private Long gameId;
@@ -57,8 +59,23 @@ public class Game {
         return innings;
     }
 
+    public void addScore(Long teamId) {
+        if(teamId == homeTeamId) {
+            this.homeTeamScore++;
+        }
+
+        if(teamId == awayTeamId) {
+            this.awayTeamScore++;
+        }
+    }
+
     public void addInning(Inning inning) {
         innings.add(inning);
+    }
+
+    public Inning getInningByInningId(Long inningId) {
+        return innings.stream().filter(inning -> inning.getInningId() == inningId)
+                .findFirst().orElseThrow(RuntimeException::new);
     }
 
     @Override
