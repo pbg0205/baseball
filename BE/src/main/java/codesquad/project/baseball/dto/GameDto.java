@@ -2,18 +2,33 @@ package codesquad.project.baseball.dto;
 
 import codesquad.project.baseball.domain.Game;
 import codesquad.project.baseball.domain.Team;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class GameDto {
+    @JsonProperty("game_id")
     private Long gameId;
 
+
+    @JsonProperty("home_team_id")
     private Long homeTeamId;
+
+    @JsonProperty("home_team_name")
     private String homeTeamName;
+
+
+    @JsonProperty("home_team_point")
     private int homeTeamPoint;
 
+    @JsonProperty("away_team_id")
     private Long awayTeamId;
+
+    @JsonProperty("away_team_name")
     private String awayTeamName;
+
+    @JsonProperty("away_team_point")
     private int awayTeamPoint;
 
+    @JsonProperty("now_inning_id")
     private Long nowInningId;
 
     public GameDto(Game game, Team homeTeam, Team awayTeam) {
