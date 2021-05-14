@@ -31,7 +31,7 @@ public class ScoreService {
         this.battingStatusRepository = battingStatusRepository;
     }
 
-    public BattingStatusDto getBattingStatFromTeamId(Long gameId, Long teamId) {
+    public BattingStatusDto getBattingStatFromTeamId(Long gameId) {
         Game game = gameRepository.findById(gameId).orElseThrow(RuntimeException::new);
         TeamDto homeTeamDto = getTeamDto(game, game.getHomeTeamId());
         TeamDto awayTeamDto = getTeamDto(game, game.getAwayTeamId());

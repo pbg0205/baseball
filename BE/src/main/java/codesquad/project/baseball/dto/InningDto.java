@@ -214,6 +214,11 @@ public class InningDto {
         this.pitcherName = pitcher.getPlayerName();
     }
 
+    public void updateTotalScore(int homeTeamScore, int awayTeamScore) {
+        this.homeTeamScore = homeTeamScore;
+        this.awayTeamScore = awayTeamScore;
+    }
+
     private void clearBallCount() {
         this.nowBallCount = new ArrayList<>();
     }

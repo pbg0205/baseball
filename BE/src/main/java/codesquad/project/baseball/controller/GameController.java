@@ -42,7 +42,7 @@ public class GameController {
     }
 
     @GetMapping("{gameId}/score/{teamId}")
-    public ResponseEntity getScorePage(@PathVariable Long gameId, @PathVariable Long teamId) {
-        return new ResponseEntity(scoreService.getBattingStatFromTeamId(gameId, teamId), HttpStatus.OK);
+    public ResponseEntity getScorePage(@PathVariable Long gameId) {
+        return new ResponseEntity(scoreService.getBattingStatFromTeamId(gameId), HttpStatus.OK);
     }
 }

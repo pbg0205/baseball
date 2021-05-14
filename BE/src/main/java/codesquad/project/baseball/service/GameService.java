@@ -115,6 +115,8 @@ public class GameService {
             battingStatusRepository.save(battingStat);
 
             updateToNextBatter(inning, inningDto);
+            updateHomeAndAwayScore(game, inningDto);
+
             gameRepository.save(game);
             return inningDto;
         }
@@ -131,6 +133,13 @@ public class GameService {
     private BattingStat getNowBatterStat(Long gameId, Long batterNumber) {
         return battingStatusRepository.findByGameIdAndPlayerId(gameId, batterNumber)
                 .orElseThrow(RuntimeException::new);
+    }
+
+    private void updateHomeAndAwayScore(Game game, InningDto inningDto) {
+        int homeTeamScore = game.getHomeTeamScore();
+        int awayTeamScore = game.getAwayTeamScore();
+
+        inningDto.updateTotalScore(homeTeamScore, awayTeamScore);
     }
 
     private void updateToNextBatter(Inning inning, InningDto inningDto) {
@@ -161,6 +170,7 @@ public class GameService {
         if (ballCountDto.isFourBall()) {
             inningDto.moveBase(game, inningDto.getTeamId());
             updateToNextBatter(inning, inningDto);
+            updateHomeAndAwayScore(game, inningDto);
             battingStat.addHit();
         }
 
