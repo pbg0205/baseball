@@ -192,6 +192,7 @@ public class InningDto {
         clearBaseStatus();
         clearBallCount();
         clearOutCount();
+        clearScore();
     }
 
     public void updateToNextInning(Inning nextInning) {
@@ -223,6 +224,10 @@ public class InningDto {
 
     private void clearOutCount() {
         this.nowOutCount = 0;
+    }
+
+    private void clearScore() {
+        this.score = 0;
     }
 
     @Override
