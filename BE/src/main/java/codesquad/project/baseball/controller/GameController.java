@@ -41,7 +41,7 @@ public class GameController {
         return new ResponseEntity(gameService.pitch(gameId, inningId, inningDto), HttpStatus.OK);
     }
 
-    @GetMapping("{gameId}/score/{teamId}")
+    @GetMapping("{gameId}/score")
     public ResponseEntity getScorePage(@PathVariable Long gameId) {
         return new ResponseEntity(scoreService.getBattingStatFromTeamId(gameId), HttpStatus.OK);
     }
